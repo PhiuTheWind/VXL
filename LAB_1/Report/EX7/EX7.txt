@@ -1,0 +1,17 @@
+  int reset = 0;
+  void clearAllClock()
+  {
+	  for (int pin = 4; pin <= 15; pin++)
+	  {
+	  	        // Turn off the current LED (PA pin)
+	  	        HAL_GPIO_WritePin(GPIOA, 1 << pin, GPIO_PIN_SET);
+	  	        HAL_Delay(1000);  // 1s delay to observe the LED
+	  }
+  }
+
+
+  while (1)
+  {
+	 clearAllClock();
+  }
+

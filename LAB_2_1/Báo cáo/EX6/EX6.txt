@@ -1,0 +1,26 @@
+Report 1: If if in line 3 of the code above is missing, what happens after that and why?
+If the if condition in line 3 (if(timer0_flag == 1)) is missing, the code inside the if block (lines 4–6) will always execute in every iteration of the while(1) loop, regardless of whether timer0_flag is set to 1 or not.
+
+Consequences:
+Continuous toggling of the LED: The HAL_GPIO_TogglePin() function will be called continuously, causing the LED to toggle state extremely rapidly without any delay or timer mechanism. The LED might appear to flicker or not visibly toggle at all due to the high speed.
+Resetting the timer repeatedly: The setTimer0(2000) function will continuously reset the timer to 2000 milliseconds (2 seconds) on each iteration of the loop. However, since timer0_flag isn't being checked, the timer won't function as intended, and it will keep resetting without reaching zero.
+Why?
+This happens because the while loop will run continuously, and without the if condition, the code inside the block will execute without any control based on the timer0_flag.
+
+Report 2: If in line 1 of the code above is changed to setTimer0(1), what happens after that and why?
+If the timer is set to 1 ms with setTimer0(1) in line 1, the timer0_counter will be set to 1 / 10 = 0, since TIMER_CYCLE = 10 (i.e., the timer is decremented every 10 ms). As a result, the timer will expire immediately or not function as expected.
+
+Consequences:
+Immediate flag set: Since timer0_counter is initialized to 0, the timer_run() function (when called) will immediately set timer0_flag = 1 on the first iteration of the loop.
+Immediate toggling of LED: The LED will toggle immediately because the timer0_flag will be set to 1 right away. Then, the timer will be reset to 2000 ms via setTimer0(2000), and the system will behave normally after that, with the LED toggling every 2 seconds.
+Why?
+Since setTimer0(1) sets the timer to a value less than TIMER_CYCLE, the counter is set to 0 from the start, causing the timer0_flag to trigger without any delay. The flag will be set right away, and the LED will toggle almost instantly after the program starts.
+
+Report 3: If in line 1 of the code above is changed to setTimer0(10), what is changed compared to the first two questions and why?
+If the timer is set to 10 ms with setTimer0(10) in line 1, the timer0_counter will be set to 10 / 10 = 1. This means the timer will take exactly one TIMER_CYCLE (which is 10 ms) to expire.
+
+Consequences:
+LED toggling after 10 ms: The timer_run() function will decrement timer0_counter from 1 to 0 after 1 cycle (which is 10 ms). Once the counter reaches 0, timer0_flag will be set to 1, and the LED will toggle.
+Timer reset to 2000 ms: After the first toggle of the LED, the timer will be reset to 2000 ms (setTimer0(2000)), and the LED will follow the regular 2-second cycle from that point onward.
+Why?
+With setTimer0(10), the initial timer duration is exactly one TIMER_CYCLE (10 ms). The timer_run() function will take exactly 10 ms to set the timer0_flag, causing the LED to toggle after this short period. Afterward, the timer behaves normally, following the 2-second delay set by setTimer0(2000).

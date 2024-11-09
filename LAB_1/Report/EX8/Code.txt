@@ -1,0 +1,14 @@
+int pin = 4;
+    void SetNumberOnClock(int num) 
+    {
+      pin = 4 + num;  // Map num to the corresponding GPIO pin (PA4 to PA15)
+      HAL_GPIO_WritePin(GPIOA, 1 << pin, GPIO_PIN_RESET);  // Turn on the corresponding LED
+      HAL_Delay(1000);  // Delay to observe the LED
+    }
+  while (1)
+  {
+	  for (int num = 0; num < 12; num++)
+	  {
+		  SetNumberOnClock(num);
+	  }
+  }

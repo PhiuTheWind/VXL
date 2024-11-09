@@ -1,0 +1,39 @@
+ int flag_red = 0;
+  int flag_yellow = 0;
+  int flag_green = 0;
+  while (1)
+  {
+	//Red Led turns on
+    if (flag_red <= 5 && flag_yellow == 0 && flag_green == 0)
+    {
+    	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, RESET);
+    	HAL_GPIO_WritePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin, SET);
+    	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, SET);
+    	flag_red++;
+    }
+
+    //Green Led turns on
+    if (flag_red > 5 && flag_yellow == 0 && flag_green <=3)
+    {
+    	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, SET);
+    	HAL_GPIO_WritePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin, SET);
+    	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, RESET);
+    	flag_green++;
+    }
+
+    //Yellow Led turns on
+    if (flag_red > 5 && flag_yellow <= 2 && flag_green > 3)
+    {
+    	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, SET);
+    	HAL_GPIO_WritePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin, RESET);
+    	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, SET);
+    	flag_yellow ++;
+        if (flag_red > 5 && flag_yellow > 2 && flag_green > 3)
+        {
+        	flag_red = 0;
+        	flag_yellow = 0;
+        	flag_green = 0;
+        }
+    }
+    HAL_Delay(1000);
+  }

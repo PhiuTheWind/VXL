@@ -1,0 +1,20 @@
+  int flag = 0;
+  while (1)
+  {
+	  if (flag < 2)
+	  {
+		  HAL_GPIO_WritePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin, SET);
+		  HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, RESET);
+		  flag++;
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin, RESET);
+		  HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, SET);
+		  flag++;
+		  if (flag == 4) flag = 0;
+	  }
+	  HAL_Delay(1000);
+  }
+  /* USER CODE END 3 */
+}

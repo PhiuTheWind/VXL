@@ -1,0 +1,5 @@
+  void clearNumberOnClock(int num)
+  {
+	  pin = 4 + num;  // Map num to the corresponding GPIO pin (PA4 to PA15)
+	  HAL_GPIO_WritePin(GPIOA, 1 << pin, GPIO_PIN_SET);  // Turn off the corresponding LED
+  }

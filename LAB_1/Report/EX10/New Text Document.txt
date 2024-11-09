@@ -1,0 +1,66 @@
+
+
+
+  // Global variable for tracking the current LED position (used for simplicity)
+  int pin = 4;  // Start with pin 4 (PA4)
+
+  void SetNumberOnClock(int num)
+  {
+	 	 pin = 4 + num;  // Map num to the corresponding GPIO pin (PA4 to PA15)
+	     HAL_GPIO_WritePin(GPIOA, 1 << pin, GPIO_PIN_RESET);  // Turn on the corresponding LED
+  }
+
+  void clearNumberOnClock(int num)
+  {
+		  pin = 4 + num;  // Map num to the corresponding GPIO pin (PA4 to PA15)
+		  HAL_GPIO_WritePin(GPIOA, 1 << pin, GPIO_PIN_SET);  // Turn off the corresponding LED
+  }
+
+  // Function to map a value (hour, minute, or second) to a 12-position clock
+  int mapToClockPosition(int value, int maxValue) {
+        return (value * 12) / maxValue;  // Maps 0-maxValue to 0-11
+    }
+
+  // Function to turn on appropriate LEDs for hour, minute, and second
+  void displayTime(int hour, int minute, int second) {
+      // Clear all LEDs first
+      for (int i = 0; i < 12; i++) {
+          clearNumberOnClock(i);  // Turn off all LEDs
+      }
+
+      // Map hour, minute, and second to clock positions (0-11)
+      int hourPosition = mapToClockPosition(hour, 12);
+      int minutePosition = mapToClockPosition(minute, 60);
+      int secondPosition = mapToClockPosition(second, 60);
+
+      // Set the LEDs for hour, minute, and second
+      SetNumberOnClock(hourPosition);
+      SetNumberOnClock(minutePosition);
+      SetNumberOnClock(secondPosition);
+  }
+
+
+  int hour = 0;
+  int minute = 0;
+  int second = 0;
+  while (1)
+  {
+	  // Update the display with the current time
+	  displayTime(hour, minute, second);
+	  // Simulate time progression
+	          HAL_Delay(1000);  // 1 second delay
+	          second++;
+
+	          if (second >= 60) {
+	              second = 0;
+	              minute++;
+	          }
+	          if (minute >= 60) {
+	              minute = 0;
+	              hour++;
+	          }
+	          if (hour >= 12) {
+	              hour = 0;
+	          }
+
+  }

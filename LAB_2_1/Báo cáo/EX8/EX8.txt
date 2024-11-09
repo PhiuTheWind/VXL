@@ -1,0 +1,156 @@
+Additional Functions 
+//Timer 0
+int timer0_counter = 0;
+int timer0_flag = 0;
+int TIMER_CYCLE = 10;
+
+
+void setTimer0(int duration) {
+    timer0_counter = duration / TIMER_CYCLE;
+    timer0_flag = 0;
+}
+
+//Timer 1
+int timer1_counter = 0;
+int timer1_flag = 0;
+
+
+void setTimer1(int duration)
+{
+	timer1_counter = duration / TIMER_CYCLE;
+	timer1_flag = 0;
+}
+
+//Timer 2
+int timer2_counter = 0;
+int timer2_flag = 0;
+void setTimer2(int duration)
+{
+	timer2_counter = duration / TIMER_CYCLE;
+	timer2_flag = 0;
+}
+
+
+void timer_run()
+{
+    if (timer0_counter > 0) {
+        timer0_counter--;  // Decrement the counter
+        if (timer0_counter == 0) {
+            timer0_flag = 1;  // Set the flag when the counter reaches 0
+        }
+    }
+
+    if (timer1_counter > 0) {
+           timer1_counter--;  // Decrement the counter
+           if (timer1_counter == 0) {
+               timer1_flag = 1;  // Set the flag when the counter reaches 0
+           }
+       }
+
+    if (timer2_counter > 0) {
+            timer2_counter--;  // Decrement the counter
+            if (timer2_counter == 0) {
+                timer2_flag = 1;  // Set the flag when the counter reaches 0
+            }
+        }
+}
+/* USER CODE END 0 */
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	timer_run();
+}
+
+
+
+Test Function
+  int hour = 15, minute = 8, second = 50;
+  setTimer0(1000);  // Set the timer for Dot (1 second)
+  setTimer1(3000); 	// Set the timer for Segment leds
+  setTimer2(1000);  //Set the timer for updateClockBuffer
+  int index = 0;
+  while (1) {
+      if (timer0_flag == 1)
+      {
+    	  second++;
+    	  HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);  // Toggle the DOT pin
+          setTimer0(1000);  // Set the timer for 1000 ms (1 seconds)
+      }
+
+      if (timer1_flag == 1)
+      {
+    	  switch (index)
+    	  	{
+    	  		case 0:
+    	  			//Display led 1
+    	  			display_7SEG(led_buffer[0]);
+
+    	              HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, GPIO_PIN_RESET);
+    	              HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, GPIO_PIN_SET);
+    	              break;
+
+    	  		case 1:
+    	  			//Display led 2
+    	  			display_7SEG(led_buffer[1]);
+
+    	              HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, GPIO_PIN_RESET);
+    	              HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, GPIO_PIN_SET);
+    	              break;
+
+    	  		case 2:
+    	  			 //Display led 3
+    	  			 display_7SEG(led_buffer[2]);
+
+    	              HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, GPIO_PIN_RESET);
+    	              HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, GPIO_PIN_SET);
+    	              break;
+
+    	  		case 3:
+    	  			//Display led 4
+    	  			display_7SEG(led_buffer[3]);
+
+    	              HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, GPIO_PIN_SET);
+    	              HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, GPIO_PIN_RESET);
+    	              break;
+
+    	  		default:
+    	  			break;
+    	  	}
+    	  	index++;
+    	  	if(index >= 4)
+    	  	{
+    	  		index = 0;
+    	  	}
+    	  	setTimer1(3000);
+      }
+
+      if(timer2_flag == 1)
+      {
+    	  if(second >= 60)
+    	  {
+    	      minute++;
+    	      second = 0;
+    	  }
+    	  if(minute >= 60)
+    	  {
+    		  hour++;
+    		  minute = 0;
+    	  }
+          if (hour >= 24)
+          {
+        	  hour = 0;
+          }
+          updateClockBuffer(minute, hour);
+          setTimer2(1000);
+      }
+
+  }
+}

@@ -1,0 +1,30 @@
+  int hour = 15, minute = 8, second = 50;
+  setTimer0(1000);  // Set the timer for 1000 ms (1 second)
+
+  while (1) {
+      if (timer0_flag == 1) {
+    	  second++;
+    	  HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);  // Toggle the DOT pin
+
+          if(second >= 60)
+          {
+        	  minute++;
+        	  second = 0;
+          }
+          if(minute >= 60)
+          {
+        	  hour++;
+        	  minute = 0;
+          }
+          if (hour >= 24)
+          {
+        	  hour = 0;
+          }
+
+          setTimer0(1000);  // Set the timer for 1000 ms (1 seconds)
+      }
+
+      // Call timer_run periodically (e.g., from SysTick or another timer interrupt)
+      // timer_run();
+  }
+}
