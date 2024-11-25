@@ -39,7 +39,7 @@ uint8_t SCH_Delete_Task(uint32_t taskID) {
 }
 
 
-// Initialize SCH_task
+// Initialize SCH_task and delete all tasks
 void SCH_Init(void) {
     for (int i = 0; i < SCH_MAX_TASKS; i++) {
         SCH_tasks_G[i].pTask = NULL;
@@ -53,19 +53,21 @@ void SCH_Init(void) {
 
 
 uint32_t SCH_Add_Task(void(*pFunction)(), uint32_t DELAY, uint32_t PERIOD) {
-    if (current_index_task < SCH_MAX_TASKS) {
-        // Initialize new task
-        SCH_tasks_G[current_index_task].pTask = pFunction;
-        SCH_tasks_G[current_index_task].Delay = DELAY / TIME_CYCLE;
-        SCH_tasks_G[current_index_task].Period = PERIOD / TIME_CYCLE;
-        SCH_tasks_G[current_index_task].RunMe = 0;
-        SCH_tasks_G[current_index_task].TaskID = current_index_task;
-
-        current_index_task++; // Update current task index
-
-        return SCH_tasks_G[current_index_task - 1].TaskID;
+    if (current_index_task >= SCH_MAX_TASKS) {
+        // Error: Task queue overflow
+        // Implement an error handler here
+        return -1;
     }
-    return -1; // Add task failed
+    // Initialize new task
+    SCH_tasks_G[current_index_task].pTask = pFunction;
+    SCH_tasks_G[current_index_task].Delay = DELAY / TIME_CYCLE;
+    SCH_tasks_G[current_index_task].Period = PERIOD / TIME_CYCLE;
+    SCH_tasks_G[current_index_task].RunMe = 0;
+    SCH_tasks_G[current_index_task].TaskID = current_index_task;
+
+    current_index_task++; // Update current task index
+
+    return SCH_tasks_G[current_index_task - 1].TaskID;
 }
 
 
@@ -106,32 +108,4 @@ void SCH_Dispatch_Tasks(void) {
             }
         }
     }
-}
-
-
-// Add error handling for task overflow
-uint8_t SCH_Add_Task_Safe(void(*pFunction)(), uint32_t DELAY, uint32_t PERIOD) {
-    if (current_index_task >= SCH_MAX_TASKS) {
-        // Error: Task queue overflow
-        // Implement an error handler here
-        return -1;
-    }
-    return SCH_Add_Task(pFunction, DELAY, PERIOD);
-}
-
-// Function to delete all tasks
-void SCH_Delete_All_Tasks(void) {
-    while (current_index_task > 0) {
-        SCH_Delete_Task(current_index_task - 1);
-    }
-}
-
-// Function to modify an existing task
-uint8_t SCH_Modify_Task(uint32_t taskID, uint32_t newDelay, uint32_t newPeriod) {
-    if (taskID >= current_index_task) {
-        return -1; // Task not found
-    }
-    SCH_tasks_G[taskID].Delay = newDelay / TIME_CYCLE;
-    SCH_tasks_G[taskID].Period = newPeriod / TIME_CYCLE;
-    return taskID;
 }
