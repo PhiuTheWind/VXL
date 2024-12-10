@@ -1,0 +1,4 @@
+../Core/Src/uart.c:32:6:clean_content	8	static
+../Core/Src/uart.c:36:6:check_content	8	static
+../Core/Src/uart.c:53:6:command_parser_fsm	8	static
+../Core/Src/uart.c:79:6:uart_communication_fsm	8	static
